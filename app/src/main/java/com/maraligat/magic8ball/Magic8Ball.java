@@ -1,14 +1,13 @@
 package com.maraligat.magic8ball;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener{
+public class Magic8Ball implements SensorEventListener{
 
     private Sensor accelerometer;
     private SensorManager sm;
@@ -18,20 +17,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private final static long UPDATEPERIOD = 300;
     private static final int SHAKE_THRESHOLD = 500;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        this.initialize();
-    }
+    private final String [] predictions = {"Yes, definitely", "No way", "Let me think about that", "Maybe"};
 
-    private void initialize() {
-        sm = (SensorManager)getSystemService(SENSOR_SERVICE);
+    Context thisContext;
+
+    public Magic8Ball(Context thisContext) {
+        this.thisContext = thisContext;
+        sm = (SensorManager)thisContext.getSystemService(thisContext.SENSOR_SERVICE);
         accelerometer = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sm.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         curTime = lastUpdate = (long)0.0;
         x = y = z = last_x = last_y = last_z;
     }
+
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -48,7 +46,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float speed = Math.abs(x + y + z - last_x - last_y - last_z) / diffTime * 10000;
 
             if (speed > SHAKE_THRESHOLD){
-                Toast.makeText(this, "Shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(thisContext, "Shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
+                this.makePrediction();
             }
 
             last_x = x;
@@ -62,4 +61,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onAccuracyChanged(Sensor sensor, int i) {
 
     }
+
+    public void makePrediction() {
+            
+    }
+
 }
